@@ -3,10 +3,10 @@ const { validTitle, validName, validPhone, validEmail, validPassword, validStree
 //  middleware for validation of registering user
 const validUserMW = function (req, res, next) {
     try {
-        const Body = req.body
+        const body = req.body
         const { title, name, phone, email, password, address } = req.body
 
-        if (Object.keys(Body).length == 0) return res.status(400).send({ status: false, msg: "Please fill data in body" })
+        if (Object.keys(body).length == 0) return res.status(400).send({ status: false, msg: "Please fill data in body" })
 
 
 

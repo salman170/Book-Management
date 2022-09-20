@@ -4,7 +4,7 @@
   "description": "We will make API for user register and login as well as some api for book create, update, get books , get particular book , delete book.",
   "main": "index.js",
   "scripts": {
-    "test": "npx nodemon src/index.jx"
+    "test": "npx nodemon src/index.js"
   },
   "repository": {
     "type": "git",

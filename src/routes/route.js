@@ -9,7 +9,5 @@ router.post("/register", validUserMW, createUser)
 
 router.post('/login', userLogin)
 
-// router.get('/test-me')
-
 
 module.exports = router
