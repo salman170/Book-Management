@@ -1,33 +1,46 @@
-const mongoose = requrie("mongoose")
+const mongoose = require("mongoose")
 
 const userSchema = new mongoose.Schema({
     title: {
         type: String,
-        requried: true,
-        enum: [Mr, Mrs, Miss]
+        required: true,
+        enum: ["Mr", "Mrs", "Miss"],
+        trim:true
     },
     name: {
         type: String,
-        requried: true
+        required: true,
+        trim:true
     },
     phone: {
         type: String,
-        requried: true,
-        unique: true
+        required: true,
+        unique: true,
+        trim:true
     },
     email: {
         type: String,
-        requried: true,
-        unique: true
+        required: true,
+        unique: true,
+        trim:true
     },
     password: {
         type: String,
-        requried: true
+        required: true,
+        trim:true
     },
     address: {
-        street: { type : String },
-        city: { type : String },
-        pincode: { type: String }
+        street: { 
+            type : String,
+            trim:true 
+        },
+        city: { 
+            type : String,
+            trim:true 
+        },
+        pincode: { 
+            type: String,
+            trim:true}
     }
 
 }, { timestamp: true })
