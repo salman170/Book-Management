@@ -6,6 +6,7 @@ const { validUserMW } = require("../middlewares/validUserMW")
 
 
 router.post("/register", validUserMW, createUser)
+
 router.post('/login', userLogin)
 
 // router.get('/test-me')
