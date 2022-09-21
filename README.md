@@ -309,7 +309,7 @@ Refer below sample
     "excerpt": "book body",
     "userId": ObjectId("88abc190ef0288abc190ef02")
     "category": "Book",
-    "subcategory": "Non fiction", "Self Help"],
+    "subcategory": ["Non fiction", "Self Help"],
     "isDeleted": false,
     "reviews": 0,
     "releasedAt": "2021-09-17"
@@ -318,4 +318,22 @@ Refer below sample
     "reviewsData": []
   }
 }
-```
+
+ {
+        "_id": "632aeec070ec4ad46c637ee2",
+        "title": "A",
+        "excerpt": "success secret",
+        "userId": "6329d037b5f5917814938853",
+        "ISBN": "918-0708871375",
+        "category": "Book",
+        "subcategory": [
+            "Entertainment"
+        ],
+        "reviews": 0,
+        "isDeleted": false,
+        "deletedAt": null,
+        "releasedAt": "2022-09-20T23:00:16.000Z",
+        "createdAt": "2022-09-21T11:00:16.750Z",
+        "updatedAt": "2022-09-21T11:00:16.750Z",
+        "reviewsData": []
+    }

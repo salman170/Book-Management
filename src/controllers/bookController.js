@@ -1,5 +1,6 @@
 const bookModel = require('../model/bookModel')
 const userModel = require("../model/userModel")
+const reviewModel = require("../model/reviewModel")
 const mongoose = require("mongoose")
 const moment = require("moment")
 const ObjectId = mongoose.Types.ObjectId.isValid
@@ -15,7 +16,7 @@ const createBook = async function (req, res) {
         if (Object.keys(data).length == 0) {
             return res.status(400).send({ status: false, msg: "please enter require data to create Book" })
         }
-        let { title, excerpt, userId, ISBN, category, subcategory, reviews ,releasedAt, isDeleted} = data;
+        let { title, excerpt, userId, ISBN, category, subcategory, reviews, releasedAt, isDeleted } = data;
 
         if (!title) {
             return res.status(400).send({ status: false, msg: "Title is mandatory" })
@@ -76,21 +77,26 @@ const createBook = async function (req, res) {
         }
 
 
-        if(reviews){if(typeof (reviews) !== "number"&& reviews !=0){
-            return res.status(400).send({ status: false, msg: "Reviews will be in number format only and should be 0 while creating book" })
-        }}
-        
-        if (releasedAt) {
-            if (!/^(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(releasedAt)) return res.status(400).send({ status: false, message: "Enter date in YYYY-MM-DD format" });
-            releasedAt = new Date().toISOString()
+        if (reviews) {
+            if (typeof (reviews) !== "number" && reviews != 0) {
+                return res.status(400).send({ status: false, msg: "Reviews will be in number format only and should be 0 while creating book" })
+            }
         }
-        //Creating Data Here
+
         if (!releasedAt) {
-            let date = Date.now()                                               //getting timestamps value
+            return res.status(400).send({ status: false, msg: "releasedAt is mandatory" })
+        }
+            if (!/^(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(releasedAt)) return res.status(400).send({ status: false, message: "Enter date in YYYY-MM-DD format" });
+            let date = Date.now()                                           //getting timestamps value
             releasedAt = moment(date).format('YYYY-MM-DD, hh:mm:ss')        //formatting date
             data['releasedAt'] = releasedAt
-        }
-        if(isDeleted){
+        
+        //Creating Data Here
+        // if (!releasedAt) {                                           //getting timestamps value
+        //     releasedAt = moment().format('YYYY-MM-DD, hh:mm:ss')        //formatting date
+        //     data['releasedAt'] = releasedAt
+        // }
+        if (isDeleted) {
             data.isDeleted = false
         }
 
@@ -104,11 +110,6 @@ const createBook = async function (req, res) {
 }
 
 
-
-
-
-
-
 //<----------------------Get Books API --------------------->
 const books = async function (req, res) {
     try {
@@ -116,7 +117,7 @@ const books = async function (req, res) {
         console.log(queries);
 
         if (Object.keys(queries).length == 0) {
-            let bookList = await bookModel.find({ isDeleted: false }).select({ ISBN: 0, subcategory: 0, isDeleted: 0, deletedAt: 0, __v: 0 })
+            let bookList = await bookModel.find({ isDeleted: false }).select({ ISBN: 0, subcategory: 0, isDeleted: 0, deletedAt: 0, __v: 0 }).sort("title")
 
             if (bookList.length == 0) return res.status(404).send({ status: false, msg: "No data found" })
 
@@ -126,16 +127,32 @@ const books = async function (req, res) {
         const { userId, category, subcategory } = req.query
         const filter = { isDeleted: false }
 
-        if (userId != undefined && userId.trim() != "") {
+        if (userId) {
+            if (userId == undefined || userId.trim() == "") {
+                return res.status(404).send({ status: false, msg: "please give value of filter" })
+            }
+
             if (!ObjectId(userId.trim())) { return res.status(400).send({ status: false, msg: "Invalid UserId" }) }
             filter.userId = userId.trim()
         }
-        if (category != undefined && category.trim() != "") { filter.category = category.trim() }
-        if (subcategory != undefined && subcategory.trim() != "") { filter.subcategory = subcategory.trim() }
+
+        if (category) {
+            if (category == undefined || category.trim() == "") {
+                return res.status(404).send({ status: false, msg: "please give value of filter category" })
+            }
+            filter.category = category.trim()
+        }
+        if (subcategory) {
+            if (subcategory == undefined || subcategory.trim() == "") {
+                return res.status(404).send({ status: false, msg: "please give value of filter Subcategory" })
+            }
+            filter.subcategory = subcategory.trim()
+        }
 
         console.log(filter);
 
-        let bookList = await bookModel.find(filter).select({ ISBN: 0, subcategory: 0, isDeleted: 0, deletedAt: 0, __v: 0 })
+        let bookList = await bookModel.find(filter).select({ ISBN: 0, subcategory: 0, isDeleted: 0, deletedAt: 0, __v: 0 }).sort("title")
+
         if (bookList.length == 0) return res.status(404).send({ status: false, msg: "No data found" })
 
 
@@ -152,20 +169,24 @@ const books = async function (req, res) {
 
 //<=======================Get Book by bookId API=================================>
 
-const getParticularBook = async function(req, res){
-  
-        let bookId = req.params.bookId
-        if(!ObjectId(bookId)) return res.status(400).send({status:false, message:" Invalid bookId"})
+const getParticularBook = async function (req, res) {
 
-         let book = await bookModel.findById({_id:bookId })
+    let bookId = req.params.bookId
+    if (!ObjectId(bookId)) return res.status(400).send({ status: false, message: " Invalid bookId" })
 
-         if(!book) return res.status(404).send({status: false,message: "bookId is not found" })
-        res.status(200).send({status:true, data: book})
-   
+    let book = await bookModel.findOne({_id:bookId, isDeleted:false}).select({ __v: 0 , ISBN :0, deletedAt:0})
+
+    if (!book) return res.status(404).send({ status: false, message: "bookId is not found" })
+
+    let obj = book._doc
+    reviewsData = await reviewModel.find({ bookId: bookId })
+    obj["reviewsData"] = reviewsData
+    res.status(200).send({ status: true, message: "Book list", data: obj })
+
 
 }
 
 
 
 
-module.exports = { createBook , getParticularBook, books }
+module.exports = { createBook, getParticularBook, books }

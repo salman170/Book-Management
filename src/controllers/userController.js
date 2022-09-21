@@ -57,8 +57,8 @@ const userLogin = async function (req, res) {
 		let token = jwt.sign(
 			{
 				userId: userInDb._id.toString(),
-				exp: Math.floor(Date.now() / 1000) + (10 * 60), // Importing module // Expression for initialising expiry time
-				iat: (new Date().getTime())
+				exp: Math.floor(Date.now() / 1000) + (50 * 60), // After 50 min it will expire 
+				iat: Math.floor(Date.now() / 1000)
 			}, "FunctionUp Group No 57");
 
 		const date = new Date();
