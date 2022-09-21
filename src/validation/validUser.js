@@ -26,7 +26,7 @@ const validName = function (value) {
 
 const validPhone = function (value) {
     let regex = /^[6-9]{1}[0-9]{9}$/
-    return regex.test(value.trim())
+    return regex.test(value.toString().trim())
 
 }
 

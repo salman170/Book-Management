@@ -1,12 +1,12 @@
 const userModel = require("../model/userModel")
 const jwt = require('jsonwebtoken')
-const { validEmail, validPassword } = require("../validation/validUser.js")
+const { validEmail } = require("../validation/validUser.js")
 
 
 //<----------------------Create User API --------------------->
 const createUser = async function (req, res) {
 	try {
-		const Body = req.body
+		const body = req.body
 		const { title, name, phone, email, password, address } = req.body
 
 
@@ -21,7 +21,7 @@ const createUser = async function (req, res) {
 
 
 		//  -------------- creating new user --------------
-		const newUser = await userModel.create(Body)
+		const newUser = await userModel.create(body)
 		return res.status(201).send({ status: true, msg: "User successfully Registerd", data: newUser })
 	}
 	catch (err) {
@@ -30,31 +30,6 @@ const createUser = async function (req, res) {
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -82,16 +57,12 @@ const userLogin = async function (req, res) {
 		let token = jwt.sign(
 			{
 				userId: userInDb._id.toString(),
-				// Importing module
-				// Expression for initialising expiry time
-				exp: Math.floor(Date.now() / 1000) + (10 * 60),
+				exp: Math.floor(Date.now() / 1000) + (10 * 60), // Importing module // Expression for initialising expiry time
 				iat: (new Date().getTime())
 			}, "FunctionUp Group No 57");
 
 		const date = new Date();
-		console.log(`Token Generated at:- ${date.getHours()}
-                                :${date.getMinutes()}
-                                :${date.getSeconds()}`);
+		console.log(`Token Generated at:- ${date.getHours()} :${date.getMinutes()} :${date.getSeconds()}`);
 		res.setHeader("x-api-key", token);
 		res.status(201).send({ status: true, token: token });
 
