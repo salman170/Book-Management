@@ -31,9 +31,7 @@ const createBook = async function (req, res) {
         if (checktitle) {
             return res.status(400).send({ status: false, message: "This title is already taken" })
         }
-        // if (!/^[a-zA-Z \s]+$/.test(title)) {
-        //     return res.status(400).send({ status: false, msg: "Please Enter Only Alphabets in title" })
-        // }
+
         if (!excerpt) {
             return res.status(400).send({ status: false, msg: "Excerpt is mandatory" })
         }
@@ -78,7 +76,6 @@ const createBook = async function (req, res) {
             return res.status(400).send({ status: false, msg: "Please Enter Only Alphabets in subcategory" })
         }
 
-
         if (reviews) {
             if (typeof (reviews) !== "number" && reviews != 0) {
                 return res.status(400).send({ status: false, msg: "Reviews will be in number format only and should be 0 while creating book" })
@@ -88,16 +85,10 @@ const createBook = async function (req, res) {
         if (!releasedAt) {
             return res.status(400).send({ status: false, msg: "releasedAt is mandatory" })
         }
-            if (!/^(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(releasedAt)) return res.status(400).send({ status: false, message: "Enter date in YYYY-MM-DD format" });
-                                                      //getting timestamps value
-            releasedAt = moment(releasedAt).format('YYYY-MM-DD, hh:mm:ss')        //formatting date
-            data['releasedAt'] = releasedAt
-        
-        //Creating Data Here
-        // if (!releasedAt) {                                           //getting timestamps value
-        //     releasedAt = moment().format('YYYY-MM-DD, hh:mm:ss')        //formatting date
-        //     data['releasedAt'] = releasedAt
-        // }
+        if (!/^(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(releasedAt)) return res.status(400).send({ status: false, message: "Enter date in YYYY-MM-DD format (only 19th and 20 centuries date is applicable." });
+        releasedAt = moment(releasedAt).format('YYYY-MM-DD')
+        data['releasedAt'] = releasedAt
+
         if (isDeleted) {
             data.isDeleted = false
         }
@@ -176,7 +167,7 @@ const getParticularBook = async function (req, res) {
     let bookId = req.params.bookId
     if (!ObjectId(bookId)) return res.status(400).send({ status: false, message: " Invalid bookId" })
 
-    let book = await bookModel.findOne({_id:bookId, isDeleted:false}).select({ __v: 0 , ISBN :0, deletedAt:0})
+    let book = await bookModel.findOne({ _id: bookId, isDeleted: false }).select({ __v: 0, ISBN: 0, deletedAt: 0 })
 
     if (!book) return res.status(404).send({ status: false, message: "bookId is not found" })
 
@@ -189,6 +180,34 @@ const getParticularBook = async function (req, res) {
 }
 
 
+//<=======================Update Book by bookId API=================================>
+const updateBookById = async function (req, res) {
+    try {
+
+    }
+    catch (error) {
+        return res.status(500).send({ status: false, message: error.message })
+    }
+}
+
+//<=======================Delete Book by bookId API=================================>
+const deleteBookById = async function (req, res) {
+    try {
+        let bookId = req.params.bookId
+
+        let book = await bookModel.findOne({ _id: bookId, isDeleted: false })
+        if (!book) return res.status(404).send({ status: false, message: "No data found" })
+
+        let deletedBook = await bookModel.findByIdAndUpdate({ _id: bookId },
+            { $set: { isDeleted: true, deletedAt: new Date() } })
+
+        res.status(200).send({ status: true, message: "Book is successfully deleted" }) 
+    }
+    catch (error) {
+        return res.status(500).send({ status: false, message: error.message })
+    }
+}
 
 
-module.exports = { createBook, getParticularBook, books }
+
+module.exports = { createBook, getParticularBook, books, updateBookById, deleteBookById }

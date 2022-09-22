@@ -14,7 +14,7 @@ const authentication = async function (req, res, next) {
         }
         jwt.verify(token, "FunctionUp Group No 57", (err, decodedToken) => {
             if (err) {
-                return res.status(401).send({ status: false, message: "token is not valid" })
+                return res.status(401).send({ status: false, message: "token is not valid or expired" })
             }
             req.userId = decodedToken.userId
             //Set an attribute in request object 
@@ -37,7 +37,7 @@ const authorization = async function (req, res, next) {
             if (req.body.userId.toString() !== req.userId) {
                 return res.status(403).send({ status: false, msg: "You are not authorized" })
             }
-            next()
+            return next()
         }
         if (req.params.bookId) {
             let bookId = req.params.bookId
@@ -56,8 +56,6 @@ const authorization = async function (req, res, next) {
             next()
         } else
             return res.status(403).send({ Status: false, msg: "You are not authorized provide bookId in path param or in request body " })
-
-
 
     }
     catch (err) {
