@@ -9,6 +9,8 @@ const ObjectId = mongoose.Types.ObjectId.isValid
 
 
 //<=======================Create Book API=================================>
+
+//need to work on releasedAt
 const createBook = async function (req, res) {
     try {
 
@@ -87,8 +89,8 @@ const createBook = async function (req, res) {
             return res.status(400).send({ status: false, msg: "releasedAt is mandatory" })
         }
             if (!/^(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(releasedAt)) return res.status(400).send({ status: false, message: "Enter date in YYYY-MM-DD format" });
-            let date = Date.now()                                           //getting timestamps value
-            releasedAt = moment(date).format('YYYY-MM-DD, hh:mm:ss')        //formatting date
+                                                      //getting timestamps value
+            releasedAt = moment(releasedAt).format('YYYY-MM-DD, hh:mm:ss')        //formatting date
             data['releasedAt'] = releasedAt
         
         //Creating Data Here

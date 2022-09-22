@@ -32,23 +32,33 @@ const authentication = async function (req, res, next) {
 //<=======================Authorization =================================>
 const authorization = async function (req, res, next) {
     try {
-        if (!req.params.bookId)
-            return res.status(403).send({ Status: false, msg: "You are not authorized provide bookId in path param " })
-
-        let bookId = req.params.bookId
-
-        if (!ObjectId(bookId)) { return res.status(400).send({ status: false, msg: `${bookId}is not in MongoDb objectId format` }) }
-
-        let bookdetails = await bookModel.findById(bookId)
-        if (!bookdetails) {
-            return res.status(400).send({ status: false, msg: "bookId is invalid" })
+        if (req.body.userId) {
+            if (!ObjectId(req.body.userId)) { return res.status(400).send({ status: false, msg: `${req.body.userId}is not in MongoDb objectId format` }) }
+            if (req.body.userId.toString() !== req.userId) {
+                return res.status(403).send({ status: false, msg: "You are not authorized" })
+            }
+            next()
         }
+        if (req.params.bookId) {
+            let bookId = req.params.bookId
 
-        if (bookdetails.userId._id.toString() !== req.userId) {
-            return res.status(403).send({ status: false, msg: "You are not authorized" })
-        }
+            if (!ObjectId(bookId)) { return res.status(400).send({ status: false, msg: `${bookId}is not in MongoDb objectId format` }) }
 
-        next()
+            let bookdetails = await bookModel.findById(bookId)
+            if (!bookdetails) {
+                return res.status(400).send({ status: false, msg: "bookId is invalid" })
+            }
+
+            if (bookdetails.userId._id.toString() !== req.userId) {
+                return res.status(403).send({ status: false, msg: "You are not authorized" })
+            }
+
+            next()
+        } else
+            return res.status(403).send({ Status: false, msg: "You are not authorized provide bookId in path param or in request body " })
+
+
+
     }
     catch (err) {
         res.status(500).send({ status: false, msg: err.message })

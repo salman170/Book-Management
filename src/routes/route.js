@@ -16,7 +16,9 @@ router.post('/books',authentication,createBook)
 
 router.get('/books',authentication, books)
 
-router.get('/books/:bookId',authentication, authorization, getParticularBook)
+router.get('/books/:bookId', authentication , getParticularBook)
+
+router.get('/books/:bookId', authentication , getParticularBook)
 
 
 module.exports = router

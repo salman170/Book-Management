@@ -47,8 +47,6 @@ const userLogin = async function (req, res) {
 		if (!email) return res.status(400).send({ status: false, msg: "Email is mandatory" })
 		if (!validEmail(email)) return res.status(400).send({ status: false, msg: "Invalid email, ex.- ( abc123@gmail.com )" })
 
-
-
 		if (!password) return res.status(400).send({ status: false, msg: "Password is mandatory" })
 
 		let userInDb = await userModel.findOne({ email: email, password: password });
@@ -61,13 +59,16 @@ const userLogin = async function (req, res) {
 				iat: Math.floor(Date.now() / 1000)
 			}, "FunctionUp Group No 57");
 
-		const date = new Date();
-		console.log(`Token Generated at:- ${date.getHours()} :${date.getMinutes()} :${date.getSeconds()}`);
 		res.setHeader("x-api-key", token);
-		res.status(201).send({ status: true, token: token });
 
-		// Printing the JWT token
-		console.log(token);
+		let data = {
+			token: token,
+			userId: userInDb._id.toString(),
+			exp: Math.floor(Date.now() / 1000) + (50 * 60), // After 50 min it will expire 
+			iat: Math.floor(Date.now() / 1000)
+
+		}
+		res.status(201).send({ status: true,message: "Token has been successfully generated.", data: data });
 	}
 	catch (err) {
 		console.log("This is the error :", err.message)

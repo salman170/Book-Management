@@ -1,3 +1,5 @@
+
+
 # Book-Management
 
 # Plutonium
@@ -36,7 +38,7 @@
   userId: {ObjectId, mandatory, refs to user model},
   ISBN: {string, mandatory, unique},
   category: {string, mandatory},
-  subcategory: [string, mandatory],
+  subcategory: {string, mandatory},
   reviews: {number, default: 0, comment: Holds number of reviews of this book},
   deletedAt: {Date, when the document is deleted}, 
   isDeleted: {boolean, default: false},
@@ -319,21 +321,3 @@ Refer below sample
   }
 }
 
- {
-        "_id": "632aeec070ec4ad46c637ee2",
-        "title": "A",
-        "excerpt": "success secret",
-        "userId": "6329d037b5f5917814938853",
-        "ISBN": "918-0708871375",
-        "category": "Book",
-        "subcategory": [
-            "Entertainment"
-        ],
-        "reviews": 0,
-        "isDeleted": false,
-        "deletedAt": null,
-        "releasedAt": "2022-09-20T23:00:16.000Z",
-        "createdAt": "2022-09-21T11:00:16.750Z",
-        "updatedAt": "2022-09-21T11:00:16.750Z",
-        "reviewsData": []
-    }
