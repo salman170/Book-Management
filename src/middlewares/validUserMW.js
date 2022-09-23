@@ -36,24 +36,24 @@ const validUserMW = function (req, res, next) {
 
 
         // if (address == undefined || Object.keys(address).length == 0) return res.status(400).send({ status: false, msg: "address is mandatory" })
-       if (typeof address!= "object" || Array.isArray(address)) return res.status(400).send({ status: false, msg: "address value will be an object" })
+        if (typeof address != "object" || Array.isArray(address)) return res.status(400).send({ status: false, msg: "address value will be an object" })
+        if (address) {
+            if (Object.keys(address).length == 0) {
+                return res.status(400).send({ status: false, msg: "please enter require data to create Book" })
+            }
 
+            const { street, city, pincode } = address
 
-        const { street, city, pincode } = address
-
-        if (!street) return res.status(400).send({ status: false, msg: "Street is mandatory" })
-        if (!validStreet(street)) return res.status(400).send({ status: false, msg: "Invalid street name, available characters ( a-z A-Z 0-9 .,- )" })
-
-
-
-        if (!city) return res.status(400).send({ status: false, msg: "City is mandatory" })
-        if (!validName(city)) return res.status(400).send({ status: false, msg: "Invalid city name, available characters ( a-z A-Z .)" })
-
-
-
-        if (!pincode) return res.status(400).send({ status: false, msg: "Pincode is mandatory" })
-        if (!validPincode(pincode)) return res.status(400).send({ status: false, msg: "Invalid pincode, available characters ( 0-9 ) with 6 digits " })
-
+            if (street) {
+                if (!validStreet(street)) return res.status(400).send({ status: false, msg: "Invalid street name, available characters ( a-z A-Z 0-9 .,- )" })
+            }
+            if (city) {
+                if (!validName(city)) return res.status(400).send({ status: false, msg: "Invalid city name, available characters ( a-z A-Z .)" })
+            }
+            if (pincode) {
+                if (!validPincode(pincode)) return res.status(400).send({ status: false, msg: "Invalid pincode, available characters ( 0-9 ) with 6 digits " })
+            }
+        }
 
         next()
     }
