@@ -184,8 +184,9 @@ const getParticularBook = async function (req, res) {
 
         if (!book) return res.status(404).send({ status: false, message: "Book is not found" })
 
-        let obj = book._doc
         reviewsData = await reviewModel.find({ bookId: bookId }).select({ isDeleted: 0, createdAt: 0, updatedAt: 0, __v: 0 })
+       
+        let obj = book._doc
         obj["reviewsData"] = reviewsData
         res.status(200).send({ status: true, message: "Book list", data: obj })
     }
@@ -197,14 +198,6 @@ const getParticularBook = async function (req, res) {
 
 
 //<=======================Update Book by bookId API=================================>
-
-// - Update a book by changing its
-//   - title
-//   - excerpt
-//   - release date
-//   - ISBN
-// - Make sure the unique constraints are not violated when making the update
-// - Check if the bookId exists (must have isDeleted false and is present in collection). If it doesn't, return an HTTP status 404 with a response body like [this]
 const updateBookById = async function (req, res) {
     try {
         let bookId = req.params.bookId
@@ -216,6 +209,7 @@ const updateBookById = async function (req, res) {
 
         let { title, excerpt, releasedAt, ISBN } = req.body
         const filter = { isDeleted: false }
+        if(!title || !excerpt ||!releasedAt ||!ISBN)
 
         if (title) {
             if (title == undefined || title.trim() == "")

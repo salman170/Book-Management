@@ -35,7 +35,8 @@ const validUserMW = function (req, res, next) {
 
 
 
-        if (address == undefined || Object.keys(address).length == 0) return res.status(400).send({ status: false, msg: "address is mandatory" })
+        // if (address == undefined || Object.keys(address).length == 0) return res.status(400).send({ status: false, msg: "address is mandatory" })
+       if (typeof address!= "object" || Array.isArray(address)) return res.status(400).send({ status: false, msg: "address value will be an object" })
 
 
         const { street, city, pincode } = address
