@@ -42,14 +42,16 @@ const userLogin = async function (req, res) {
 		const body = req.body
 		if (Object.keys(body).length == 0) return res.status(400).send({ status: false, msg: "Please fill data in body" })
 
-		const { email, password } = req.body
+		const { email, password, ...rest } = req.body
+
+		if (Object.keys(rest).length>0) return res.status(400).send({ status: false, msg: `You can not fill these:-( ${Object.keys(rest)} ) data ` })
 
 		if (!email) return res.status(400).send({ status: false, msg: "Email is mandatory" })
 		if (!validEmail(email)) return res.status(400).send({ status: false, msg: "Invalid email, ex.- ( abc123@gmail.com )" })
 
 		if (!password) return res.status(400).send({ status: false, msg: "Password is mandatory" })
 
-		let userInDb = await userModel.findOne({ email: email, password: password });
+		let userInDb = await userModel.findOne({ email: email, password: password, isDeleted: false });
 		if (!userInDb) return res.status(401).send({ status: false, msg: "email or the password is not corerct" })
 
 		let token = jwt.sign(
@@ -68,7 +70,7 @@ const userLogin = async function (req, res) {
 			iat: Math.floor(Date.now() / 1000)
 
 		}
-		res.status(201).send({ status: true,message: "Token has been successfully generated.", data: data });
+		res.status(201).send({ status: true, message: "Token has been successfully generated.", data: data });
 	}
 	catch (err) {
 		console.log("This is the error :", err.message)

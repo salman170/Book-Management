@@ -4,7 +4,9 @@ const { validTitle, validName, validPhone, validEmail, validPassword, validStree
 const validUserMW = function (req, res, next) {
     try {
         const body = req.body
-        const { title, name, phone, email, password, address } = req.body
+        const { title, name, phone, email, password, address, ...rest } = req.body
+
+        if (Object.keys(rest).length>0) return res.status(400).send({ status: false, msg: `You can not fill these:-( ${Object.keys(rest)} ) data ` })
 
         if (Object.keys(body).length == 0) return res.status(400).send({ status: false, msg: "Please fill data in body" })
 

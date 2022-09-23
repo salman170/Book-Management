@@ -20,7 +20,9 @@ const createReview = async function (req, res) {
         if (Object.keys(data).length == 0) {
             return res.status(400).send({ status: false, message: "Please give data to create review" })
         }
-        let { reviewedBy, rating, review, isDeleted, reviewedAt } = data
+        let { reviewedBy, rating, review, isDeleted, reviewedAt, ...rest } = data
+
+        if (Object.keys(rest).length > 0) return res.status(400).send({ status: false, msg: `You can not fill these:-( ${Object.keys(rest)} ) data ` })
 
         if (typeof reviewedBy == "string" && reviewedBy.trim() == "") {
             data.reviewedBy = "Guest"
@@ -106,7 +108,7 @@ const updateReview = async function (req, res) {
 
     const { review, rating, reviewedBy, ...rest } = data
 
-    if (rest) return res.status(400).send({ status: false, msg: `You can not update:-( ${Object.keys(rest)} )` })
+    if (Object.keys(rest).length > 0) return res.status(400).send({ status: false, msg: `You can not update these:-( ${Object.keys(rest)} ) data` })
 
     if (review) {
         if (!/^[a-zA-Z \s]+$/.test(review)) {
