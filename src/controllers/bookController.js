@@ -185,7 +185,7 @@ const getParticularBook = async function (req, res) {
         if (!book) return res.status(404).send({ status: false, message: "Book is not found" })
 
         reviewsData = await reviewModel.find({ bookId: bookId }).select({ isDeleted: 0, createdAt: 0, updatedAt: 0, __v: 0 })
-       
+
         let obj = book._doc
         obj["reviewsData"] = reviewsData
         res.status(200).send({ status: true, message: "Book list", data: obj })
@@ -207,9 +207,10 @@ const updateBookById = async function (req, res) {
             return res.status(400).send({ status: false, msg: "please enter require data to create Book" })
         }
 
-        let { title, excerpt, releasedAt, ISBN } = req.body
+        let { title, excerpt, releasedAt, ISBN, ...rest } = req.body
         const filter = { isDeleted: false }
-        if(!title || !excerpt ||!releasedAt ||!ISBN)
+
+        if (rest) return res.status(400).send({ status: false, msg: `You can not update:-( ${Object.keys(rest)} )` })
 
         if (title) {
             if (title == undefined || title.trim() == "")
@@ -251,7 +252,7 @@ const updateBookById = async function (req, res) {
 
         const updateBook = await bookModel.findOneAndUpdate(
             { _id: bookId, isDeleted: false },
-            { $set: filter},
+            { $set: filter },
             { new: true })
         if (updateBook === null) return res.status(404).send({ status: false, message: "No such book found...!" })
         res.status(200).send({ Status: true, message: "Success", Data: updateBook })

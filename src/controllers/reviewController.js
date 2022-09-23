@@ -104,7 +104,9 @@ const updateReview = async function (req, res) {
 
     if (!checkReview) return res.status(404).send({ status: false, message: "Review not found" });
 
-    const { review, rating, reviewedBy } = data
+    const { review, rating, reviewedBy, ...rest } = data
+
+    if (rest) return res.status(400).send({ status: false, msg: `You can not update:-( ${Object.keys(rest)} )` })
 
     if (review) {
         if (!/^[a-zA-Z \s]+$/.test(review)) {
@@ -121,10 +123,6 @@ const updateReview = async function (req, res) {
             return res.status(400).send({ status: false, msg: "ReviewedBy only on alphabets" })
         }
     }
-    // if (!(reviewedAt || bookId || isDeleted)) {
-    //     return res.status(400).send({ status: false, msg: "You can not update reviewedAt or bookId or Deleted" })
-
-    // }
 
     let updateReview = await reviewModel.findOneAndUpdate({ _id: reviewId }, { $set: data }, { new: true });
     let result = book.toObject();
