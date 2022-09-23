@@ -152,7 +152,7 @@ const deleteByBookId_ReviewId = async function (req, res) {
         if (!review_in_DB) return res.status(404).send({ status: false, msg: "No review found" })
 
 
-        if (book_in_DB.reviews == 0) return res.status(404).send({ status: false, msg: "already 0" })
+        if (book_in_DB.reviews == 0) return res.status(404).send({ status: false, msg: "review is already 0" })
 
         const updatedBook = await bookModel.findByIdAndUpdate(bookId, { $inc: { "reviews": -1 } }, { new: true })
         const updatedReview = await reviewModel.findByIdAndUpdate(reviewId, { isDeleted: true }, { new: true })

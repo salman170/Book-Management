@@ -1,9 +1,10 @@
-const bookModel = require('../model/bookModel')
-const userModel = require("../model/userModel")
-const reviewModel = require("../model/reviewModel")
+// const bookModel = require('../model/bookModel')
+// const userModel = require("../model/userModel")
+// const reviewModel = require("../model/reviewModel")
 const mongoose = require("mongoose")
 const moment = require("moment")
 const ObjectId = mongoose.Types.ObjectId.isValid
+
 
 
 const createBookMW = async function (req, res, next) {
@@ -28,8 +29,8 @@ const createBookMW = async function (req, res, next) {
         if (!excerpt) {
             return res.status(400).send({ status: false, msg: "Excerpt is mandatory" })
         }
-        if (!/^[a-zA-Z \s]+$/.test(excerpt)) {
-            return res.status(400).send({ status: false, msg: "Please Enter Only Alphabets in excerpt" })
+        if (!/^[a-zA-Z 0-9.,''-\s]+$/.test(excerpt)) {
+            return res.status(400).send({ status: false, msg: "Please Enter  Alphabets and ( 0-9 .,-'' )in excerpt" })
         }
         if (!userId) {
             return res.status(400).send({ status: false, msg: "UserId is mandatory" })
