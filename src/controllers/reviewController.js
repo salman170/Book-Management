@@ -82,55 +82,54 @@ const createReview = async function (req, res) {
 
 //<=======================Update Book Review by bookId &API=================================>
 const updateReview = async function (req, res) {
-    let bookIs = req.params.bookId;
-    let reviewId = req.params.reviewId;
-    let data = req.body;
+    try {
+        let bookIs = req.params.bookId;
+        let reviewId = req.params.reviewId;
+        let data = req.body;
 
 
-    if (!ObjectId(bookIs)) {
-        return res.status(400).send({ status: false, msg: "Invalid BookId" })
-    }
-    if (!ObjectId(reviewId)) {
-        return res.status(400).send({ status: false, msg: "Invalid reviewId" })
-    }
+        if (!ObjectId(bookIs)) return res.status(400).send({ status: false, msg: "Invalid BookId" })
+       
+        if (!ObjectId(reviewId)) return res.status(400).send({ status: false, msg: "Invalid reviewId" })
+    
+        if (Object.keys(data).length == 0) return res.status(400).send({ status: false, msg: "please enter require data to update review" })
+        
+        let book = await bookModel.findOne({ _id: bookIs, isDeleted: false });
 
-    if (Object.keys(data).length == 0) {
-        return res.status(400).send({ status: false, msg: "please enter require data to update review" })
-    }
+        if (!book) return res.status(404).send({ status: false, message: "Book not found" });
 
-    let book = await bookModel.findOne({ _id: bookIs, isDeleted: false });
+        let checkReview = await reviewModel.findOne({ _id: reviewId, isDeleted: false });
 
-    if (!book) return res.status(404).send({ status: false, message: "Book not found" });
+        if (!checkReview) return res.status(404).send({ status: false, message: "Review not found" });
 
-    let checkReview = await reviewModel.findOne({ _id: reviewId, isDeleted: false });
+        const { review, rating, reviewedBy, ...rest } = data
 
-    if (!checkReview) return res.status(404).send({ status: false, message: "Review not found" });
+        if (Object.keys(rest).length > 0) return res.status(400).send({ status: false, msg: `You can not update these:-( ${Object.keys(rest)} ) data` })
 
-    const { review, rating, reviewedBy, ...rest } = data
-
-    if (Object.keys(rest).length > 0) return res.status(400).send({ status: false, msg: `You can not update these:-( ${Object.keys(rest)} ) data` })
-
-    if (review) {
-        if (!/^[a-zA-Z \s]+$/.test(review)) {
-            return res.status(400).send({ status: false, msg: "Review only on alphabets" })
+        if (review) {
+            if (!/^[a-zA-Z \s]+$/.test(review)) {
+                return res.status(400).send({ status: false, msg: "Review only on alphabets" })
+            }
         }
-    }
-    if (rating) {
-        if (!/^[1-5]$/.test(rating)) {
-            return res.status(400).send({ status: false, msg: "Please provide a valid rating( rating should between 1-5 digit )" })
+        if (rating) {
+            if (!/^[1-5]$/.test(rating)) {
+                return res.status(400).send({ status: false, msg: "Please provide a valid rating( rating should between 1-5 digit )" })
+            }
         }
-    }
-    if (reviewedBy) {
-        if (!/^[a-zA-Z \s]+$/.test(reviewedBy)) {
-            return res.status(400).send({ status: false, msg: "ReviewedBy only on alphabets" })
+        if (reviewedBy) {
+            if (!/^[a-zA-Z \s]+$/.test(reviewedBy)) {
+                return res.status(400).send({ status: false, msg: "ReviewedBy only on alphabets" })
+            }
         }
+
+        let updateReview = await reviewModel.findOneAndUpdate({ _id: reviewId }, { $set: data }, { new: true });
+        let result = book.toObject();
+        result.reviewsData = updateReview;
+        res.status(200).send({ status: true, message: "Review Update Successfully", date: result });
     }
-
-    let updateReview = await reviewModel.findOneAndUpdate({ _id: reviewId }, { $set: data }, { new: true });
-    let result = book.toObject();
-    result.reviewsData = updateReview;
-    res.status(200).send({ status: true, message: "Review Update Successfully", date: result });
-
+    catch (err) {
+        return res.status(500).send({ status: false, msg: err.message })
+    }
 }
 
 //<=======================Delete review by bookId API=================================>

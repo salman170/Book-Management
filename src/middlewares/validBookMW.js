@@ -76,6 +76,7 @@ const createBookMW = async function (req, res, next) {
         // releasedAt = moment(releasedAt).format('YYYY-MM-DD')
         // data['releasedAt'] = releasedAt
 
+        if (isDeleted) { data.isDeleted = false }
         next()
 
     }
