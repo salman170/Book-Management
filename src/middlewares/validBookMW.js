@@ -40,7 +40,7 @@ const createBookMW = async function (req, res, next) {
         if (!ISBN) {
             return res.status(400).send({ status: false, msg: "ISBN is mandatory" })
         }
-        if (!/^\+?([1-9]{3})\)?[-. ]?([0-9]{10})$/.test(ISBN)) {
+        if (!/^(?=(?:\D*\d){13}(?:(?:\D*\d){3})?$)[\d-]+$/.test(ISBN)) {
             return res.status(400).send({ status: false, message: 'Please provide a valid ISBN(ISBN should be 13 digit e.g 978-0-596-52068-7)' })
         }
 

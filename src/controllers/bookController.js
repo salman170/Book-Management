@@ -43,7 +43,7 @@ const books = async function (req, res) {
         let queries = req.query
 
         if (Object.keys(queries).length == 0) {
-            let bookList = await bookModel.find({ isDeleted: false }).select({ ISBN: 0, subcategory: 0, isDeleted: 0, deletedAt: 0, __v: 0 }).sort("title")
+            let bookList = await bookModel.find({ isDeleted: false }).select({ ISBN: 0, subcategory: 0, isDeleted: 0, deletedAt: 0, __v: 0, createdAt:0, updatedAt:0 }).sort("title")
 
             if (bookList.length == 0) return res.status(404).send({ status: false, msg: "No data found" })
 
@@ -156,7 +156,7 @@ const updateBookById = async function (req, res) {
         }
 
         if (ISBN) {
-            if (!/^\+?([1-9]{3})\)?[-. ]?([0-9]{10})$/.test(ISBN))
+            if (!/^(?=(?:\D*\d){13}(?:(?:\D*\d){3})?$)[\d-]+$/.test(ISBN))
                 return res.status(400).send({ status: false, message: 'Please provide a valid ISBN(ISBN should be 13 digit e.g 978-0-596-52068-7)' })
 
             let checkISBN = await bookModel.findOne({ ISBN: ISBN })

@@ -52,12 +52,12 @@ const userLogin = async function (req, res) {
 		if (!password) return res.status(400).send({ status: false, msg: "Password is mandatory" })
 
 		let userInDb = await userModel.findOne({ email: email, password: password, isDeleted: false });
-		if (!userInDb) return res.status(401).send({ status: false, msg: "email or the password is not corerct" })
+		if (!userInDb) return res.status(401).send({ status: false, msg: "invalid credentials (email or the password is not corerct)" })
 
 		let token = jwt.sign(
 			{
 				userId: userInDb._id.toString(),
-				exp: Math.floor(Date.now() / 1000) + (50 * 60), // After 50 min it will expire 
+				exp: Math.floor(Date.now() / 1000) + (10 * 60), // After 10 min it will expire 
 				iat: Math.floor(Date.now() / 1000)
 			}, "FunctionUp Group No 57");
 

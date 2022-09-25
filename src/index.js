@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
-mongoose.connect(process.env.MONGO_URL, {
+mongoose.connect(process.env.MONGO_URL || "mongodb+srv://matheenahamad:9TNGWEhzUB0Ttemi@matheen.vtdepfw.mongodb.net/group57Database", {
     useNewUrlParser: true
 })
     .then(() => console.log("MongoDb is connected"))
@@ -35,5 +35,5 @@ app.listen((process.env.PORT || 3000), function () {
 
 
 app.use("/*", function (req, res) {
-    return res.status(404).send({ status: false, msg: "path not found" })
+    return res.status(400).send({ status: false, msg: "invalid request params (path not found)" })
 });
