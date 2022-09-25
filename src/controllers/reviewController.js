@@ -103,6 +103,8 @@ const updateReview = async function (req, res) {
 
         if (!checkReview) return res.status(404).send({ status: false, message: "Review not found" });
 
+        if(checkReview.bookId!=bookIs) return res.status(400).send({ status: false, msg: "BookId in param isn't matching with reviews docment's bookId " })
+
         const { review, rating, reviewedBy, ...rest } = data
 
         if (Object.keys(rest).length > 0) return res.status(400).send({ status: false, msg: `You can not update these:-( ${Object.keys(rest)} ) data` })
@@ -124,6 +126,7 @@ const updateReview = async function (req, res) {
         }
 
         let updateReview = await reviewModel.findOneAndUpdate({ _id: reviewId }, { $set: data }, { new: true });
+        
         let result = book.toObject();
         result.reviewsData = updateReview;
         res.status(200).send({ status: true, message: "Review Update Successfully", date: result });
@@ -151,14 +154,15 @@ const deleteByBookId_ReviewId = async function (req, res) {
         const review_in_DB = await reviewModel.findOne({ _id: reviewId, isDeleted: false })
         if (!review_in_DB) return res.status(404).send({ status: false, msg: "No review found" })
 
+        if(review_in_DB.bookId!=bookId) return res.status(400).send({ status: false, msg: "BookId in param isn't matching with reviews docment's bookId so can't delete review" })
 
         if (book_in_DB.reviews == 0) return res.status(404).send({ status: false, msg: "review is already 0" })
 
         const updatedBook = await bookModel.findByIdAndUpdate(bookId, { $inc: { "reviews": -1 } }, { new: true })
         const updatedReview = await reviewModel.findByIdAndUpdate(reviewId, { isDeleted: true }, { new: true })
 
-        // console.log(updatedBook);
-        // console.log(updatedReview);
+        console.log(updatedBook);
+        console.log(updatedReview);
 
         return res.status(200).send({ status: true, msg: "review is successfully deleted" })
 
