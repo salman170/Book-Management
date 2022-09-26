@@ -15,7 +15,7 @@ const createBook = async function (req, res) {
     try {
 
         let data = req.body;
-        
+
         let { title, userId, ISBN } = data;
 
         let checktitle = await bookModel.findOne({ title: title })
@@ -43,7 +43,7 @@ const books = async function (req, res) {
         let queries = req.query
 
         if (Object.keys(queries).length == 0) {
-            let bookList = await bookModel.find({ isDeleted: false }).select({ ISBN: 0, subcategory: 0, isDeleted: 0, deletedAt: 0, __v: 0, createdAt:0, updatedAt:0 }).sort("title")
+            let bookList = await bookModel.find({ isDeleted: false }).select({ ISBN: 0, subcategory: 0, isDeleted: 0, deletedAt: 0, __v: 0, createdAt: 0, updatedAt: 0 }).collation({locale: "en" }).sort({title: 1})
 
             if (bookList.length == 0) return res.status(404).send({ status: false, message: "No data found" })
 
@@ -80,10 +80,9 @@ const books = async function (req, res) {
 
         console.log(filter);
 
-        let bookList = await bookModel.find(filter).select({ ISBN: 0, subcategory: 0, isDeleted: 0, deletedAt: 0, __v: 0 }).sort("title")
+        let bookList = await bookModel.find(filter).select({ ISBN: 0, subcategory: 0, isDeleted: 0, deletedAt: 0, __v: 0 }).collation({locale: "en" }).sort({title: 1})
 
         if (bookList.length == 0) return res.status(404).send({ status: false, message: "No data found" })
-
 
         return res.status(200).send({ status: true, message: "list of Books", data: bookList })
 
@@ -91,7 +90,6 @@ const books = async function (req, res) {
     catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }
-
 
 }
 
@@ -127,7 +125,7 @@ const updateBookById = async function (req, res) {
         const body = req.body;
 
         if (Object.keys(body).length == 0) return res.status(400).send({ status: false, message: "please enter require data to create Book" })
-        
+
         let { title, excerpt, releasedAt, ISBN, ...rest } = req.body
 
         if (Object.keys(rest).length > 0) return res.status(400).send({ status: false, message: `You can not update these:-( ${Object.keys(rest)} ) data ` })
