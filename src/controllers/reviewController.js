@@ -24,26 +24,21 @@ const createReview = async function (req, res) {
 
         if (Object.keys(rest).length > 0) return res.status(400).send({ status: false, msg: `You can not fill these:-( ${Object.keys(rest)} ) data ` })
 
-        if (!bookId) return res.status(400).send({ status: false, message: "BookId is mandatory" })
-        if (bookId) {
-            if (!ObjectId(bookId)) { return res.status(400).send({ status: false, msg: "bookId is not in format" }) }
-
-            if (bookId != bookIdInParam) return res.status(400).send({ status: false, message: "bookId in param and bookId in body should be same only" })
-        } else data["bookId"] = bookIdInParam
+       
+      data["bookId"] = bookIdInParam
 
         if (!rating) {
             return res.status(400).send({ status: false, message: "Rating is mandatory" })
         }
         if (!/^[1-5]$/.test(rating)) return res.status(400).send({ status: false, msg: "Please provide a valid rating( rating should between 1-5 digit )" })
 
-        if (!reviewedAt) return res.status(400).send({ status: false, message: "reviewedAt is mandatory" })
+        
 
-        if (reviewedAt) {
-            if (!/^(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(reviewedAt)) return res.status(400).send({ status: false, message: "Enter date in YYYY-MM-DD format" });
-            reviewedAt = new Date().toISOString()
+        
+            let date = Date.now()
+            reviewedAt = moment(date).format('YYYY-MM-DD')
             data['reviewedAt'] = reviewedAt
-        }
-
+    
         if (typeof reviewedBy == "string" && reviewedBy.trim() == "") {
             data.reviewedBy = "Guest"
             reviewedBy = "Guest"
