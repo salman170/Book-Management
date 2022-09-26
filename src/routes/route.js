@@ -4,7 +4,7 @@ const { createUser, userLogin } = require('../controllers/userController')
 const { createBook, books, getParticularBook, updateBookById, deleteBookById } = require('../controllers/bookController')
 const { validUserMW } = require("../middlewares/validUserMW")
 const { createBookMW } = require("../middlewares/validBookMW")
-const { authentication, authorization } = require("../middlewares/auth")
+const { authentication, authorization,authorization2 } = require("../middlewares/auth")
 const { createReview, updateReview, deleteByBookId_ReviewId } = require('../controllers/reviewController')
 
 
@@ -15,8 +15,7 @@ router.post("/register", validUserMW, createUser)
 router.post('/login', userLogin)
 
 //<--------------------Book API's---------------------------->
-// router.post('/books',authentication, authorization,createBook)
-router.post('/books',authentication, authorization,createBookMW,createBook)
+router.post('/books',authentication, authorization2,createBookMW,createBook)
 // router.post('/books', createBookMW, createBook)
 router.get('/books', authentication, books)
 router.get('/books/:bookId', authentication, getParticularBook)

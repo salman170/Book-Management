@@ -32,13 +32,7 @@ const authentication = async function (req, res, next) {
 //<=======================Authorization =================================>
 const authorization = async function (req, res, next) {
     try {
-        if (req.body.userId) {
-            if (!ObjectId(req.body.userId)) { return res.status(400).send({ status: false, msg: `${req.body.userId}is not in MongoDb objectId format` }) }
-            if (req.body.userId.toString() !== req.userId) {
-                return res.status(403).send({ status: false, msg: "You are not authorized" })
-            }
-            return next()
-        }
+
         if (req.params.bookId) {
             let bookId = req.params.bookId
 
@@ -55,7 +49,7 @@ const authorization = async function (req, res, next) {
 
             next()
         } else
-            return res.status(403).send({ Status: false, msg: "You are not authorized provide bookId in path param or in request body " })
+            return res.status(403).send({ Status: false, msg: "You are not authorized provide bookId in path param " })
 
     }
     catch (err) {
@@ -63,6 +57,19 @@ const authorization = async function (req, res, next) {
     }
 }
 
+const authorization2 = async function (req, res, next) {
+    try {
+        if (req.body.userId) {
+            if (!ObjectId(req.body.userId)) { return res.status(400).send({ status: false, msg: `${req.body.userId}is not in MongoDb objectId format` }) }
+            if (req.body.userId.toString() !== req.userId) {
+                return res.status(403).send({ status: false, msg: "You are not authorized" })
+            }
+            return next()
+        }else  return res.status(400).send({ status: false, message: "userId is mandatory" })
+    }
+    catch (err) {
+        res.status(500).send({ status: false, msg: err.message })
+    }
 
-
-module.exports = { authentication, authorization }
+}
+    module.exports = { authentication, authorization,authorization2 }

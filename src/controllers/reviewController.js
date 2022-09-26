@@ -24,21 +24,18 @@ const createReview = async function (req, res) {
 
         if (Object.keys(rest).length > 0) return res.status(400).send({ status: false, msg: `You can not fill these:-( ${Object.keys(rest)} ) data ` })
 
-       
-      data["bookId"] = bookIdInParam
+
+        data["bookId"] = bookIdInParam
 
         if (!rating) {
             return res.status(400).send({ status: false, message: "Rating is mandatory" })
         }
         if (!/^[1-5]$/.test(rating)) return res.status(400).send({ status: false, msg: "Please provide a valid rating( rating should between 1-5 digit )" })
 
-        
+        let date = Date.now()
+        reviewedAt = moment(date).format('YYYY-MM-DD')
+        data['reviewedAt'] = reviewedAt
 
-        
-            let date = Date.now()
-            reviewedAt = moment(date).format('YYYY-MM-DD')
-            data['reviewedAt'] = reviewedAt
-    
         if (typeof reviewedBy == "string" && reviewedBy.trim() == "") {
             data.reviewedBy = "Guest"
             reviewedBy = "Guest"
@@ -50,10 +47,8 @@ const createReview = async function (req, res) {
             return res.status(400).send({ status: false, msg: "reviewedBy only on alphabets" })
         }
 
-
-
-        if (!/^[a-zA-Z \s]+$/.test(review)) {
-            return res.status(400).send({ status: false, msg: "Review only on alphabets" })
+        if (review && typeof review != "string") {
+            return res.status(400).send({ status: false, msg: "Review will only string" })
         }
 
         if (isDeleted) {
@@ -62,7 +57,7 @@ const createReview = async function (req, res) {
 
         let reviewsData = await reviewModel.create(data)
 
-        let bookReviwes = await bookModel.findOneAndUpdate({ _id: bookIdInParam }, { $inc: { reviews: +1 } },{ new: true }).select({ updatedAt: 0, __v: 0, isDeleted: 0 })
+        let bookReviwes = await bookModel.findOneAndUpdate({ _id: bookIdInParam }, { $inc: { reviews: +1 } }, { new: true }).select({ updatedAt: 0, __v: 0, isDeleted: 0 })
 
         let result = bookReviwes.toObject()
         result.reviewsData = reviewsData
@@ -98,30 +93,20 @@ const updateReview = async function (req, res) {
 
         if (!checkReview) return res.status(404).send({ status: false, message: "Review not found" });
 
-        if(checkReview.bookId!=bookIs) return res.status(400).send({ status: false, msg: "BookId in param isn't matching with reviews docment's bookId " })
+        if (checkReview.bookId != bookIs) return res.status(400).send({ status: false, msg: "BookId in param isn't matching with reviews docment's bookId " })
 
         const { review, rating, reviewedBy, ...rest } = data
 
         if (Object.keys(rest).length > 0) return res.status(400).send({ status: false, msg: `You can not update these:-( ${Object.keys(rest)} ) data` })
 
-        if (review) {
-            if (!/^([a-zA-Z 0-9 @%$*+!.,-]){2,100}$/.test(review)) {
-                return res.status(400).send({ status: false, msg: "Review format is wrong, you can use alphabets, number, some special characters/symbols" })
-            }
-        }
-        if (rating) {
-            if (!/^[1-5]$/.test(rating)) {
-                return res.status(400).send({ status: false, msg: "Please provide a valid rating( rating should between 1-5 digit )" })
-            }
-        }
-        if (reviewedBy) {
-            if (!/^[a-zA-Z \s]+$/.test(reviewedBy)) {
-                return res.status(400).send({ status: false, msg: "ReviewedBy only on alphabets" })
-            }
-        }
+        if (review && typeof review != "string") return res.status(400).send({ status: false, msg: "Review format is wrong, it will be string only" })
+
+        if (rating && !/^[1-5]$/.test(rating)) return res.status(400).send({ status: false, msg: "Please provide a valid rating( rating should between 1-5 digit )" })
+
+        if (reviewedBy && !/^[a-zA-Z \s]+$/.test(reviewedBy)) return res.status(400).send({ status: false, msg: "ReviewedBy only on alphabets" })
 
         let updateReview = await reviewModel.findOneAndUpdate({ _id: reviewId }, { $set: data }, { new: true });
-        
+
         let result = book.toObject();
         result.reviewsData = updateReview;
         res.status(200).send({ status: true, message: "Review Update Successfully", date: result });
@@ -149,7 +134,7 @@ const deleteByBookId_ReviewId = async function (req, res) {
         const review_in_DB = await reviewModel.findOne({ _id: reviewId, isDeleted: false })
         if (!review_in_DB) return res.status(404).send({ status: false, msg: "No review found" })
 
-        if(review_in_DB.bookId!=bookId) return res.status(400).send({ status: false, msg: "BookId in param isn't matching with reviews docment's bookId so can't delete review" })
+        if (review_in_DB.bookId != bookId) return res.status(400).send({ status: false, msg: "BookId in param isn't matching with reviews docment's bookId so can't delete review" })
 
         if (book_in_DB.reviews == 0) return res.status(404).send({ status: false, msg: "review is already 0" })
 
