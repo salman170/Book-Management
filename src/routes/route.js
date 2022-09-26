@@ -8,8 +8,6 @@ const { authentication, authorization,authorization2 } = require("../middlewares
 const { createReview, updateReview, deleteByBookId_ReviewId } = require('../controllers/reviewController')
 
 
-
-
 //<--------------------User API's---------------------------->
 router.post("/register", validUserMW, createUser)
 router.post('/login', userLogin)

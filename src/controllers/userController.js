@@ -57,7 +57,7 @@ const userLogin = async function (req, res) {
 		let token = jwt.sign(
 			{
 				userId: userInDb._id.toString(),
-				exp: Math.floor(Date.now() / 1000) + (10 * 60), // After 10 min it will expire 
+				exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 ), // After 10 min it will expire //Date.now() / 1000 => second *60
 				iat: Math.floor(Date.now() / 1000)
 			}, "FunctionUp Group No 57");
 
@@ -66,7 +66,7 @@ const userLogin = async function (req, res) {
 		let data = {
 			token: token,
 			userId: userInDb._id.toString(),
-			exp: Math.floor(Date.now() / 1000) + (50 * 60), // After 50 min it will expire 
+			exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24), // After 50 min it will expire 
 			iat: Math.floor(Date.now() / 1000)
 
 		}
