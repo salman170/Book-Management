@@ -25,14 +25,14 @@ const createBook = async function (req, res) {
         if (checkISBN) return res.status(400).send({ status: false, message: "ISBN Already Exists" })
 
         let user = await userModel.findById({ _id: userId })
-        if (!user) return res.status(404).send({ status: false, msg: "No such user exist" })
+        if (!user) return res.status(404).send({ status: false, message: "No such user exist" })
 
         let savedData = await bookModel.create(data)
-        return res.status(201).send({ status: true, msg: "success", data: savedData })
+        return res.status(201).send({ status: true, message: "success", data: savedData })
 
     }
     catch (err) {
-        return res.status(500).send({ status: false, mag: err.message })
+        return res.status(500).send({ status: false, message: err.message })
     }
 }
 
@@ -45,35 +45,35 @@ const books = async function (req, res) {
         if (Object.keys(queries).length == 0) {
             let bookList = await bookModel.find({ isDeleted: false }).select({ ISBN: 0, subcategory: 0, isDeleted: 0, deletedAt: 0, __v: 0, createdAt:0, updatedAt:0 }).sort("title")
 
-            if (bookList.length == 0) return res.status(404).send({ status: false, msg: "No data found" })
+            if (bookList.length == 0) return res.status(404).send({ status: false, message: "No data found" })
 
-            return res.status(200).send({ status: true, msg: "list of Books", data: bookList })
+            return res.status(200).send({ status: true, message: "list of Books", data: bookList })
         }
 
         const { userId, category, subcategory, ...rest } = req.query
 
-        if (Object.keys(rest).length > 0) return res.status(400).send({ status: false, msg: `You can not get for these:-( ${Object.keys(rest)} ) data ` })
+        if (Object.keys(rest).length > 0) return res.status(400).send({ status: false, message: `You can not get for these:-( ${Object.keys(rest)} ) data ` })
 
         const filter = { isDeleted: false }
 
         if (userId) {
             if (userId == undefined || userId.trim() == "") {
-                return res.status(404).send({ status: false, msg: "please give value of filter" })
+                return res.status(404).send({ status: false, message: "please give value of filter" })
             }
 
-            if (!ObjectId(userId.trim())) { return res.status(400).send({ status: false, msg: "Invalid UserId" }) }
+            if (!ObjectId(userId.trim())) { return res.status(400).send({ status: false, message: "Invalid UserId" }) }
             filter.userId = userId.trim()
         }
 
         if (category) {
             if (category == undefined || category.trim() == "") {
-                return res.status(404).send({ status: false, msg: "please give value of filter category" })
+                return res.status(404).send({ status: false, message: "please give value of filter category" })
             }
             filter.category = category.trim()
         }
         if (subcategory) {
             if (subcategory == undefined || subcategory.trim() == "") {
-                return res.status(404).send({ status: false, msg: "please give value of filter Subcategory" })
+                return res.status(404).send({ status: false, message: "please give value of filter Subcategory" })
             }
             filter.subcategory = subcategory.trim()
         }
@@ -82,14 +82,14 @@ const books = async function (req, res) {
 
         let bookList = await bookModel.find(filter).select({ ISBN: 0, subcategory: 0, isDeleted: 0, deletedAt: 0, __v: 0 }).sort("title")
 
-        if (bookList.length == 0) return res.status(404).send({ status: false, msg: "No data found" })
+        if (bookList.length == 0) return res.status(404).send({ status: false, message: "No data found" })
 
 
-        return res.status(200).send({ status: true, msg: "list of Books", data: bookList })
+        return res.status(200).send({ status: true, message: "list of Books", data: bookList })
 
     }
     catch (err) {
-        return res.status(500).send({ status: false, msg: err.message })
+        return res.status(500).send({ status: false, message: err.message })
     }
 
 
@@ -126,19 +126,19 @@ const updateBookById = async function (req, res) {
         let bookId = req.params.bookId
         const body = req.body;
 
-        if (Object.keys(body).length == 0) return res.status(400).send({ status: false, msg: "please enter require data to create Book" })
+        if (Object.keys(body).length == 0) return res.status(400).send({ status: false, message: "please enter require data to create Book" })
         
         let { title, excerpt, releasedAt, ISBN, ...rest } = req.body
 
-        if (Object.keys(rest).length > 0) return res.status(400).send({ status: false, msg: `You can not update these:-( ${Object.keys(rest)} ) data ` })
+        if (Object.keys(rest).length > 0) return res.status(400).send({ status: false, message: `You can not update these:-( ${Object.keys(rest)} ) data ` })
 
         const filter = { isDeleted: false }
 
         if (title) {
             if (title == undefined || title.trim() == "")
-                return res.status(404).send({ status: false, msg: "please give value of filter" })
+                return res.status(404).send({ status: false, message: "please give value of filter" })
             if (typeof (title) !== "string")
-                return res.status(400).send({ status: false, msg: "Title will be in string format only" })
+                return res.status(400).send({ status: false, message: "Title will be in string format only" })
 
             let checkTitle = await bookModel.findOne({ title: title });
 
@@ -149,9 +149,9 @@ const updateBookById = async function (req, res) {
 
         if (excerpt) {
             if (excerpt == undefined || excerpt.trim() == "")
-                return res.status(404).send({ status: false, msg: "please give value of filter" })
+                return res.status(404).send({ status: false, message: "please give value of filter" })
             if (!/^[a-zA-Z \s]+$/.test(excerpt))
-                return res.status(400).send({ status: false, msg: "Please Enter Only Alphabets in excerpt" })
+                return res.status(400).send({ status: false, message: "Please Enter Only Alphabets in excerpt" })
             filter.excerpt = excerpt.trim()
         }
 

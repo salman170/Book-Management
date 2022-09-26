@@ -1,16 +1,13 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const route = require('./routes/route.js');
 const moment = require("moment")
 const app = express();
 const mongoose = require('mongoose')
 require("dotenv").config()
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 
-
-mongoose.connect(process.env.MONGO_URL || "mongodb+srv://matheenahamad:9TNGWEhzUB0Ttemi@matheen.vtdepfw.mongodb.net/group57Database", {
+mongoose.connect(process.env.MONGO_URL , {
     useNewUrlParser: true
 })
     .then(() => console.log("MongoDb is connected"))
@@ -28,12 +25,12 @@ app.use(
 
 app.use('/', route);
 
-app.listen((process.env.PORT || 3000), function () {
-    console.log('Express app running on port ' + (process.env.PORT || 3000))
+app.listen((process.env.PORT ), function () {
+    console.log('Express app running on port ' + (process.env.PORT ))
 });
 
 
 
 app.use("/*", function (req, res) {
-    return res.status(400).send({ status: false, msg: "invalid request params (path not found)" })
+    return res.status(400).send({ status: false, message: "invalid request params (path not found)" })
 });
