@@ -4,8 +4,11 @@ const moment = require("moment")
 const app = express();
 const mongoose = require('mongoose')
 require("dotenv").config()
+const multer = require('multer')
 
 app.use(express.json());
+app.use(multer().any())
+// multer will be used to get access to the file in nodejs
 
 mongoose.connect(process.env.MONGO_URL || "mongodb+srv://matheenahamad:9TNGWEhzUB0Ttemi@matheen.vtdepfw.mongodb.net/group57Database", {
     useNewUrlParser: true

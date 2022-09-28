@@ -44,7 +44,7 @@ const createReview = async function (req, res) {
         if (!reviewedBy) return res.status(400).send({ status: false, message: "reviewedBy (reviewer's name) is mandatory" })
 
         if (!/^[a-zA-Z \s]+$/.test(reviewedBy)) {
-            return res.status(400).send({ status: false, message: "reviewedBy only on alphabets" })
+            return res.status(400).send({ status: false, message: "reviewedBy will be only on alphabets" })
         }
 
         if (!review) return res.status(400).send({ status: false, message: "review is mandatory" })

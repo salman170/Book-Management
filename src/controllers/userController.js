@@ -7,7 +7,7 @@ const { validEmail } = require("../validation/validUser.js")
 const createUser = async function (req, res) {
 	try {
 		const body = req.body
-		const { title, name, phone, email, password, address } = req.body
+		const { phone, email } = req.body
 
 
 		//  ------- checking uniqueness of phone no. -------
@@ -57,7 +57,7 @@ const userLogin = async function (req, res) {
 		let token = jwt.sign(
 			{
 				userId: userInDb._id.toString(),
-				exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 ), // After 10 min it will expire //Date.now() / 1000 => second *60
+				exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 ), // After 24 hours it will expire //Date.now() / 1000 => second *60
 				iat: Math.floor(Date.now() / 1000)
 			}, "FunctionUp Group No 57");
 
@@ -66,7 +66,7 @@ const userLogin = async function (req, res) {
 		let data = {
 			token: token,
 			userId: userInDb._id.toString(),
-			exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24), // After 50 min it will expire 
+			exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24), // After 24 hours it will expire 
 			iat: Math.floor(Date.now() / 1000)
 
 		}

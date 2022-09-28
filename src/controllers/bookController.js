@@ -4,8 +4,57 @@ const reviewModel = require("../model/reviewModel")
 const mongoose = require("mongoose")
 const moment = require("moment")
 const ObjectId = mongoose.Types.ObjectId.isValid
+const aws= require("aws-sdk")
 
 
+//=================================================AWS COnfig ===============================================================
+aws.config.update({
+    accessKeyId: "AKIAY3L35MCRZNIRGT6N",
+    secretAccessKey: "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",
+    region: "ap-south-1"
+})
+
+let uploadFile= async ( file) =>{
+   return new Promise( function(resolve, reject) {                                     // this function will upload file to aws and return the link
+    let s3= new aws.S3({apiVersion: '2006-03-01'});                                     // we will be using the s3 service of aws
+
+    var uploadParams= {
+        ACL: "public-read",
+        Bucket: "classroom-training-bucket",  
+        Key: "abc/" + file.originalname,  
+        Body: file.buffer
+    }
+
+
+    s3.upload( uploadParams, function (err, data ){
+        if(err) {
+            return reject({"error": err})
+        }
+        return resolve(data.Location)
+    })
+
+   })
+}
+
+
+//==============================================Uploading Image Here ========================================================
+const imageUpload = async(req,res) =>{
+    try{
+        let files= req.files
+        console.log(files)
+        if(files && files.length>0){
+            let url = await uploadFile( files[0] )
+            res.status(201).send({status: true, message: "file uploaded succesfully", URLofImage:url})
+        }
+        else{
+            res.status(400).send({status: false, message: "No file found" })
+        }
+        
+    }
+    catch(err){
+        res.status(500).send({status: false, message: err})
+    }
+}
 
 
 //<=======================Create Book API=================================>
@@ -124,7 +173,7 @@ const updateBookById = async function (req, res) {
         let bookId = req.params.bookId
         const body = req.body;
 
-        if (Object.keys(body).length == 0) return res.status(400).send({ status: false, message: "please enter require data to create Book" })
+        if (Object.keys(body).length == 0) return res.status(400).send({ status: false, message: "please enter require data to update Book" })
 
         let { title, excerpt, releasedAt, ISBN, ...rest } = req.body
 
@@ -203,4 +252,4 @@ const deleteBookById = async function (req, res) {
 }
 
 
-module.exports = { createBook, getParticularBook, books, updateBookById, deleteBookById }
+module.exports = { createBook, getParticularBook, books, updateBookById, deleteBookById, imageUpload }

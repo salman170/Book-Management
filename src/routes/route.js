@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router();
 const { createUser, userLogin } = require('../controllers/userController')
-const { createBook, books, getParticularBook, updateBookById, deleteBookById } = require('../controllers/bookController')
+const { createBook, books, getParticularBook, updateBookById, deleteBookById, imageUpload } = require('../controllers/bookController')
 const { validUserMW } = require("../middlewares/validUserMW")
 const { createBookMW } = require("../middlewares/validBookMW")
 const { authentication, authorization,authorization2 } = require("../middlewares/auth")
@@ -14,7 +14,7 @@ router.post('/login', userLogin)
 
 //<--------------------Book API's---------------------------->
 router.post('/books',authentication, authorization2,createBookMW,createBook)
-// router.post('/books', createBookMW, createBook)
+router.post("/images",authentication,imageUpload)
 router.get('/books', authentication, books)
 router.get('/books/:bookId', authentication, getParticularBook)
 router.put('/books/:bookId', authentication, authorization, updateBookById)

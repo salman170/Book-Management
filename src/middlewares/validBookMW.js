@@ -13,8 +13,7 @@ const createBookMW = async function (req, res, next) {
         let data = req.body;
         if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "please enter require data to create Book" })
 
-        let { title, excerpt, userId, ISBN, category, subcategory, reviews, releasedAt, isDeleted, ...rest } = data;
-
+        let { title, excerpt, userId, ISBN, category, subcategory, reviews, releasedAt, isDeleted,coverImage, ...rest } = data;
 
         if (Object.keys(rest).length > 0) return res.status(400).send({ status: false, message: `You can not fill these:-( ${Object.keys(rest)} ) data ` })
 
@@ -58,6 +57,10 @@ const createBookMW = async function (req, res, next) {
         // if (!/^(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(releasedAt)) return res.status(400).send({ status: false, message: "Enter date in YYYY-MM-DD format (only 19th and 20 centuries date is applicable." });
         // releasedAt = moment(releasedAt).format('YYYY-MM-DD')
         // data['releasedAt'] = releasedAt
+
+        if(!coverImage){
+            return res.status(400).send({ status: false, message: "Please Enter Cover Image URL it is mandatory" })
+        }
 
         if (isDeleted) { data.isDeleted = false }
         next()

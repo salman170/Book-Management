@@ -45,10 +45,13 @@ const bookSchema = new mongoose.Schema({
         type: Date,
         default : null
     },
-    
     releasedAt:{
         type: Date,
         requried: true
+    },
+    coverImage:{
+        type: String,
+        required : true
     }
   
 },{ timestamps: true })
